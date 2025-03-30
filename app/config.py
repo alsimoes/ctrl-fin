@@ -3,6 +3,8 @@ import os
 
 config_path = "config.json"
 
+bg_color = "#2E98C8"
+
 def carregar_configuracoes():
     if os.path.exists(config_path):
         with open(config_path, "r") as file:

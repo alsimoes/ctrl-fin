@@ -1,8 +1,13 @@
 # Variável de controle para evitar salvar dimensões durante a inicialização
 janela_inicializada = False
 
-def ao_redimensionar(event, app, config, salvar_configuracoes):
+
+def ao_redimensionar(event, app, logging, config, salvar_configuracoes):
     global janela_inicializada
+    
+    # Obter dimensões ajustadas pelo Windows
+    largura_ajustada = app.winfo_width()
+    altura_ajustada = app.winfo_height()
     
     # Obter dimensões reais definidas no código
     dimensoes_reais = app.geometry()  # Retorna algo como "1280x840+100+100"
@@ -17,9 +22,10 @@ def ao_redimensionar(event, app, config, salvar_configuracoes):
             config["window_size"]["width"] = largura_real
             config["window_size"]["height"] = altura_real
             salvar_configuracoes(config)
-            print(f"Janela redimensionada: {largura_real}x{altura_real}")
+            logging.info(f"ao_redimensionar -> largura_real={largura_real}, altura_real={altura_real}, largura_ajustada={largura_ajustada}, altura_ajustada={altura_ajustada}")
+            
 
-def ao_fechar(app):
+def ao_fechar(app, logging):
     # Obter dimensões ajustadas pelo Windows
     largura_ajustada = app.winfo_width()
     altura_ajustada = app.winfo_height()
@@ -32,15 +38,14 @@ def ao_fechar(app):
     largura_real = int(largura_real)
     altura_real = int(altura_real)
 
-    print(f"Dimensões ajustadas pelo Windows: {largura_ajustada}x{altura_ajustada}")
-    print(f"Dimensões reais definidas no código: {largura_real}x{altura_real}")
-
+    logging.info(f"ao_fechar -> largura_real={largura_real}, altura_real={altura_real}, largura_ajustada={largura_ajustada}, altura_ajustada={altura_ajustada}")
+    
     # Fechar a aplicação
     app.destroy()
 
-def marcar_janela_inicializada():
+
+def marcar_janela_inicializada(logging):
     global janela_inicializada
     janela_inicializada = True
-    print("Janela inicializada.")
-    
+    logging.info(f"marcar_janela_inicializada -> janela_inicializada={janela_inicializada}")
     
