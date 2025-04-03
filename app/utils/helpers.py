@@ -4,9 +4,12 @@ import uuid
 from datetime import datetime
 import pandas as pd
 from ofxparse import OfxParser
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any, Union
+from pydantic import BaseModel, Field, 
+from typing import List, Optional, Dict, Union, Any
+from tortoise import Tortoise, fields, run_async
+from tortoise.models import Model
 
+# Configuração do logging
 logging.basicConfig(
     level=logging.INFO,  # Nível de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     format="%(asctime)s - %(levelname)s - %(message)s",  # Formato da mensagem
@@ -14,13 +17,10 @@ logging.basicConfig(
     )
 
 
-
-
-class Conta(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Identificador único da conta")
+class Conta_Pydantic(BaseModel):
     banco: str = Field(..., description="Nome do banco")
-    agencia: str = Field(..., description="Agência do banco")
-    numero_conta: str = Field(..., description="Identificador da conta")
+    agencia: int = Field(..., description="Agência do banco")
+    numero_conta: int = Field(..., description="Identificador da conta")
     nome: str = Field(..., description="Nome da conta")
     saldo: float = Field(..., description="Saldo atual da conta")
     tipo: str = Field(..., description="Tipo de conta (corrente, poupança, etc.)")
@@ -28,16 +28,111 @@ class Conta(BaseModel):
     transacoes: List[Dict[str, Union[str, float]]] = Field(
         default_factory=list, description="Lista de transações associadas à conta"
     )
+    
+class Conta(Model):
+    banco = fields.CharField(max_length=255, description="Nome do banco")
+    agencia = fields.IntField(description="Agência do banco")
+    numero_conta = fields.IntField(description="Identificador da conta")
+    nome = fields.CharField(max_length=255, description="Nome da conta")
+    saldo = fields.FloatField(description="Saldo atual da conta")
+    tipo = fields.CharField(max_length=50, description="Tipo de conta (corrente, poupança, etc.)")
+    moeda = fields.CharField(max_length=3, description="Código da moeda (ex: BRL, USD)")
+    transacoes = fields.JSONField(default=list, description="Lista de transações associadas à conta")
+
+    class Meta:
+        table = "contas"
 
 
-class Transacao(BaseModel):
-    id: Optional[str] = Field(None, description="Identificador único da transação")
-    data: str = Field(..., description="Data da transação no formato YYYYMMDD")
+class Transacao_Pydanti(BaseModel):
+    data: date  = Field(..., description="Data da transação no formato YYYYMMDD")
     descricao: str = Field(..., description="Descrição da transação")
     valor: float = Field(..., description="Valor da transação")
     referencia: str = Field(..., description="Referência da transação")
     memo: str = Field(..., description="Identificador único da transação")
-    
+
+class Transacao(Model):
+    id = fields.UUIDField(pk=True, description="Identificador único da transação")
+    data = fields.CharField(max_length=8, description="Data da transação no formato YYYYMMDD")
+    descricao = fields.CharField(max_length=255, description="Descrição da transação")
+    valor = fields.FloatField(description="Valor da transação")
+    referencia = fields.CharField(max_length=255, description="Referência da transação")
+    memo = fields.CharField(max_length=255, description="Identificador único da transação")
+
+    class Meta:
+        table = "transacoes"
+
+async def init():
+    await Tortoise.init(db_url='sqlite://:memory:', modules={'models': ['__main__']})
+    await Tortoise.generate_schemas()
+
+async def create_user(user_data: Conta_Pydantic):
+    user = await User.create(**user_data.dict())
+    return user
+
+def importa_csv(caminho_csv, conta):
+    """
+    Converte um arquivo CSV em um arquivo OFX no formato especificado.
+
+    Args:
+        caminho_csv (str): Caminho do arquivo CSV de entrada.
+        caminho_ofx (str): Caminho do arquivo OFX de saída.
+        conta_bancaria (str): Número da conta bancária.
+        moeda (str): Código da moeda (padrão: "BRL").
+    """        
+    try:
+        conta.transacoes = []  # Inicializa a lista de transações
+        
+        parametros = {
+            'mode': 'r',
+            'encoding': 'ISO-8859-1',
+            'delimiter': ';',
+        }
+        
+        ano_atual = datetime.now().year
+        mes_atual = datetime.now().month
+
+        
+        
+        # Ler o arquivo CSV com a codificação ISO-8859-1
+        with open(parametros["caminho_csv"], parametros["mode"], parametros["encoding"]) as csv_file:
+            leitor_csv = csv.reader(csv_file, parametros["delimiter"])
+            for linha in leitor_csv:
+                # Ignorar linhas irrelevantes
+                if len(linha) < 4 or not linha[0].strip().replace("/", "").isdigit():
+                    continue
+
+                # Processar transações
+                try:
+                    data_nao_tratada = linha[0].strip()
+                    descricao = linha[1].strip() if linha[1].strip() else "Sem descrição"
+                    valor = linha[3].strip().replace(",", ".")  # Converter vírgula para ponto
+                    referencia = linha[2].strip() if len(linha) > 2 else "0000000"
+                    
+                   #  data = linha[0].strip()
+                   #  descricao = linha[1].strip() if linha[1].strip() else "Sem descrição"
+                   #  valor = linha[3].strip().replace(",", ".")  # Converter vírgula para ponto
+                   #  referencia = linha[2].strip() if len(linha) > 2 else "0000000"
+
+                    # Adicionar ano à data, se necessário
+                    dia_mes = datetime.strptime(data_nao_tratada, "%d/%m")
+                    # print(f"Data origem: {datetime.strptime(data, "%d/%m")}")
+                    if dia_mes.month > mes_atual:
+                        data_completa = dia_mes.replace(year=ano_atual - 1)  # Ano passado
+                    else:
+                        data_completa = dia_mes.replace(year=ano_atual)  # Ano atual
+                    
+                    # Criar a transação e adicionar à lista de transações da conta
+                    transacao = {
+                        "data": data_completa.strftime("%Y%m%d"),
+                        "descricao": descricao,
+                        "valor": float(valor),
+                        "referencia": referencia
+                    }
+                    conta.transacoes.append(transacao)    
+
+    except Exception as e:
+        logging.info(f"Erro ao converter CSV para OFX: {e}")
+
 
 def csv_para_ofx(caminho_csv, caminho_ofx, conta):
     """
@@ -48,9 +143,7 @@ def csv_para_ofx(caminho_csv, caminho_ofx, conta):
         caminho_ofx (str): Caminho do arquivo OFX de saída.
         conta_bancaria (str): Número da conta bancária.
         moeda (str): Código da moeda (padrão: "BRL").
-    """
-    print("\ncsv_para_ofx()\n\n")
-        
+    """        
     try:
         conta.transacoes = []  # Inicializa a lista de transações
         
@@ -103,7 +196,7 @@ def csv_para_ofx(caminho_csv, caminho_ofx, conta):
                    #     "id": f"{data}-{descricao}"
                    # })
                 except (ValueError, IndexError) as e:
-                    print(f"Erro ao processar linha: {linha} - {e}")
+                    logging.info(f"Erro ao processar linha: {linha} - {e}")
                     continue
 
         # Verificar se há transações
@@ -184,10 +277,10 @@ NEWFILEUID:NONE
         with open(caminho_ofx, mode="w", encoding="utf-8") as ofx_file:
             ofx_file.write(ofx_conteudo)
 
-        print(f"Arquivo OFX gerado com sucesso: {caminho_ofx}")
+        logging.info(f"Arquivo OFX gerado com sucesso: {caminho_ofx}")
 
     except Exception as e:
-        print(f"Erro ao converter CSV para OFX: {e}")
+        logging.info(f"Erro ao converter CSV para OFX: {e}")
     
         
 def importar_ofx_para_excel(lista_caminhos_ofx, caminho_excel):
@@ -216,10 +309,10 @@ def importar_ofx_para_excel(lista_caminhos_ofx, caminho_excel):
                             try:
                                 data_formatada = datetime.strptime(conta.date, "%y%m%d").strftime("%d/%m/%y")
                             except Exception as e:
-                                print(f"Erro ao interpretar a data: {conta.date} - {e}")
+                                logging.info(f"Erro ao interpretar a data: {conta.date} - {e}")
                                 data_formatada = "Data Inválida"
                     except Exception as e:
-                        print(f"Erro ao processar a data: {conta.date} - {e}")
+                        logging.info(f"Erro ao processar a data: {conta.date} - {e}")
                         data_formatada = "Data Inválida"
 
                     # print(f"data_formatada={data_formatada}")
@@ -237,10 +330,10 @@ def importar_ofx_para_excel(lista_caminhos_ofx, caminho_excel):
         # Salvar o DataFrame em uma planilha Excel
         df.to_excel(caminho_excel, index=False, sheet_name="Transações")
 
-        print(f"Planilha Excel gerada com sucesso: {caminho_excel}")
+        logging.info(f"Planilha Excel gerada com sucesso: {caminho_excel}")
 
     except Exception as e:
-        print(f"Erro ao importar arquivos OFX: {e}")
+        logging.info(f"Erro ao importar arquivos OFX: {e}")
 
 
   
