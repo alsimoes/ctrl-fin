@@ -1,6 +1,5 @@
 import csv
 import logging
-import uuid
 from datetime import datetime
 import pandas as pd
 from ofxparse import OfxParser
