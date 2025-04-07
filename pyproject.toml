@@ -1,0 +1,35 @@
+[project]
+name = "poupa"
+version = "0.1.0"
+description = "Controle Financeiro simples e objetivo."
+authors = [
+    {name = "André Simões", email = "alsimoes@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests",
+    "pandas",
+    "sqlalchemy",
+    "click",
+    "tqdm",
+    "pydantic"
+    ]
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+keywords = ["finanças", "controle financeiro", "python"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+scripts = { "poupa" = "poupa.__main__:init" }
+
+[poetry.group.dev.dependencies]
+pytest = "^7.0"
+black = "^23.0"

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 
-def main():
+def init() -> None:
     print("Poupa Simão!")
 

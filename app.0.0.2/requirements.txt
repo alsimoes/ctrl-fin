@@ -1,5 +1,0 @@
-ofxparse
-openpyxl
-pydantic
-sqlalchemy
-ttkbootstrap 
