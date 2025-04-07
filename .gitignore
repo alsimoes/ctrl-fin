@@ -176,3 +176,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 *.ofx
+*.7z
+.vs/
+.vscode/launch.json

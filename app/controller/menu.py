@@ -28,4 +28,4 @@ def sobre():
     Comando para exibir informações sobre a aplicação.
     """
     logger.info("Exibindo informações sobre a aplicação.")
-    messagebox.showinfo("Sobre", "Controle Financeiro\nVersão 1.0\nDesenvolvido por André Simões")
+    messagebox.showinfo("Sobre", "Controle Financeiro\nVersão 0.0.1\nDesenvolvido por André Simões")
