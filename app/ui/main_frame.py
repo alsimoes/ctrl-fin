@@ -6,7 +6,7 @@ logger = logging.getLogger()
 def criar_frame_principal(app):
     """
     Cria o frame principal da aplicação.
-
+pip install ttkbootstrap
     Args:
         app: Janela principal da aplicação.
     """    
@@ -16,21 +16,8 @@ def criar_frame_principal(app):
     
     return frame
 
-# def adicionar_widgets_frame_principal(frame):
-#     """
-#     Adiciona widgets ao frame principal.
-# 
-#     Args:
-#         frame: Frame principal da aplicação.
-#     """
-#     label = ttk.Label(frame, text="Bem-vindo ao Controle Financeiro!", font=("Helvetica", 16))
-#     label.pack(pady=20)
-#     
-#      # Adicionar o frame com duas colunas
-#      # criar_novo_orcamento(frame)
     
-    
-def criar_novo_orcamento(parent_frame):
+def criar_novo_orcamento(frame):
     """
     Adiciona um frame com quatro colunas: left_spacer, title_frame, form_frame e right_spacer.
 
@@ -39,7 +26,7 @@ def criar_novo_orcamento(parent_frame):
     """
     # Criar o frame para organizar as colunas
     
-    frame_colunas = ttk.Frame(parent_frame)
+    frame_colunas = ttk.Frame(frame)
     frame_colunas.pack(fill="both", expand=True, padx=10, pady=10)
 
     # Coluna left_spacer

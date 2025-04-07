@@ -178,4 +178,4 @@ cython_debug/
 *.ofx
 *.7z
 .vs/
-.vscode/launch.json
+.vscode/
