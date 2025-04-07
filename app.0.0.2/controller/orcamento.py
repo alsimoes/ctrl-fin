@@ -1,5 +1,5 @@
 from model.database import SessionLocal
-from model.orcamento import Orcamento
+from app.model.budget import Orcamento
 import logging
 
 logger = logging.getLogger()

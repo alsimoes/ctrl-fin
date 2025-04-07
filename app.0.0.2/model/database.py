@@ -12,7 +12,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Função para inicializar o banco de dados
 def init_db():
     from model.base import Base
-    from model.orcamento import Orcamento  # Importe todos os modelos aqui
+    from app.model.budget import Orcamento  # Importe todos os modelos aqui
 
     # Criar as tabelas no banco de dados
     Base.metadata.create_all(bind=engine)
