@@ -1,10 +1,10 @@
 import logging
 import customtkinter as ctk
-from app.config import *
-from app.ui.menu import *
-from app.ui.theme import *
-from app.ui.events import *
-from app.ui.views import *
+from old_app.config import *
+from old_app.ui.menu import *
+from old_app.ui.theme import *
+from old_app.ui.events import *
+from old_app.ui.views import *
 
  
 # Configurar o logging
