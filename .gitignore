@@ -177,5 +177,5 @@ cython_debug/
 .pypirc
 *.ofx
 *.7z
-.vs/
-.vscode/
+.vs
+.vscode
