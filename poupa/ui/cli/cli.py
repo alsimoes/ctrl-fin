@@ -1,3 +1,3 @@
 from pathlib import Path
 import click
-from poupa.settings import DATABASE_PATH
+from poupa.controller.settings import DATABASE_PATH

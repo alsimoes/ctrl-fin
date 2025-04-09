@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-from poupa.controller.config import load_config
+from poupa.controller.settings import CONFIG_FILE, DATABASE_FILE
+
 
 def init() -> None:
-    load_config()
-    
+    print(f"Initializing Poupa...")
+    print(f"{CONFIG_FILE = }")
+    print(f"{DATABASE_FILE = }")
+    print("Poupa initialized successfully.")
 
 
 if __name__ == "__main__":
