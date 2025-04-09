@@ -1,23 +1,22 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from poupa.settings import DATABASE_PATH
 
+# Configurações do SQLAlchemy
 Base = declarative_base()
+engine = None
+SessionLocal = None
 
-# Configura o engine do SQLAlchemy
-engine = create_engine(f"sqlite:///{DATABASE_PATH}")
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Importa os modelos para garantir que sejam registrados no metadata
-from poupa.model.budget import Budget  # Certifique-se de que o caminho está correto
+def database_config(database_path: str):
+    """Configura o caminho do banco de dados e inicializa o SQLAlchemy."""
+    global engine, SessionLocal
+    engine = create_engine(f"sqlite:///{database_path}")
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
-    """Verifica se o banco de dados existe e o cria, se necessário."""
-    if not os.path.exists(DATABASE_PATH):
-        print(f"Banco de dados não encontrado...")
-        print(f"Criando banco de dados...")
-        Base.metadata.create_all(engine)
-        print(f"Banco de dados criado... {os.path.basename(DATABASE_PATH)}")
-    else:
-        print(f"Banco de dados encontrado... {os.path.basename(DATABASE_PATH)}")
+    """Inicializa o banco de dados, criando as tabelas, se necessário."""
+    if engine is None:
+        raise RuntimeError("O banco de dados não foi configurado. Chame 'database_config' primeiro.")
+    Base.metadata.create_all(engine)
+
+# Exporta os objetos e funções para serem acessados por outros módulos
+__all__ = ["Base", "engine", "SessionLocal", "init_db", "database_config"]
