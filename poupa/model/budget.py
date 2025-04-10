@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2025, Poupa Simão
+# All rights reserved.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 from sqlalchemy import Column, String, DateTime
 from datetime import datetime, timezone
 from poupa.model.database import Base
@@ -5,15 +13,8 @@ from poupa.model.database import Base
 class Budget(Base):
     __tablename__ = "budgets"
 
-    id = Column(String, primary_key=True, index=True)  # ID único para cada orçamento
-    budget_name = Column(String, nullable=False)  # Nome do orçamento
-    purpose = Column(String, nullable=True)  # Propósito do orçamento
-    start_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))  # Data de início do orçamento
-    end_date = Column(DateTime, nullable=True)  # Data de término do orçamento
-    update_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))  # Data da última atualização do orçamento
-    currency = Column(String, nullable=True)  # Moeda do orçamento
+    id = Column(String, primary_key=True, index=True) 
+    name = Column(String, nullable=False)
+    start_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))      
+    update_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))    
     
-    '''
-    initial_value = Column(String, nullable=True)  # Valor inicial do orçamento
-    value = Column(String, nullable=True)  # Valor final do orçamento
-    '''
