@@ -6,16 +6,15 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from poupa.controller.settings import CONFIG_FILE, DATABASE_FILE
+import click
+from poupa.controller.settings import DATABASE_FILE
 from poupa.ui.cli import menu
-
+import poupa.model.database as db
 
 def init() -> None:
-    print(f"Initializing Poupa...")
-    print(f"{CONFIG_FILE = }")
-    print(f"{DATABASE_FILE = }")
-    print("Poupa initialized successfully.")
-    menu.welcome()
+    click.clear()
+    db.config(DATABASE_FILE)
+    menu.main()
 
 if __name__ == "__main__":
     init()
