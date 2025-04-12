@@ -20,7 +20,7 @@ def main() -> None:
     click.echo("1. Abrir último orçamento")
     click.echo("2. Listar orçamentos")
     click.echo("3. Atualizar banco de dados")
-    click.echo("\n4. Sair")
+    click.echo("\n9. Sair")
     choice: int = click.prompt("\nEscolha uma opção", type=int)
 
     
@@ -36,7 +36,7 @@ def main() -> None:
         click.echo("\nBanco de dados atualizado com sucesso!")
         click.pause("\nPressione Enter para continuar...")
         main()
-    elif choice == 4:
+    elif choice == 9:
         click.echo("\nExiting...")
         click.echo("\nAté logo!\n")
         quit()
@@ -51,7 +51,7 @@ def add_new_budget() -> None:
     click.echo("\n## NOVO ORÇAMENTO ##\n")
     budget_name: str = click.prompt("\nNome", type=str)
     click.echo("\n\n1. Salvar")
-    click.echo("\n2. Cancelar")
+    click.echo("\n9. Cancelar")
     choice: int = click.prompt("\nEscolha uma opção", type=int)
     
     if choice == 1:
@@ -69,7 +69,7 @@ def add_new_budget() -> None:
         finally:
             session.close()
         main()
-    elif choice == 2:
+    elif choice == 9:
         main()
     else:
         click.echo("\nOpção inválida. Por favor, tente novamente.")
@@ -86,11 +86,11 @@ def list_budgets() -> None:
     if not list_budgets:
         click.echo("\nNenhum orçamento encontrado.\n")
         click.echo("\n1. Adicionar orçamento\n")
-        click.echo("2. Voltar ao menu anterior\n")
+        click.echo("9. Voltar ao menu anterior\n")
         choice: int = click.prompt("\nEscolha uma opção", type=int)
         if choice == 1:
             add_new_budget()
-        elif choice == 2:
+        elif choice == 9:
             main()
     
     click.echo(f"{len(list_budgets)} orçamento(s) encontrado(s).")
@@ -104,12 +104,12 @@ def list_budgets() -> None:
     for budget in list_budgets:
         start_date: datetime = budget.start_date.strftime("%d/%m/%Y") if budget.start_date else "N/A"
         update_date: datetime  = budget.update_date.strftime("%d/%m/%Y") if budget.update_date else "N/A"
-        click.echo(f"| {budget.id:<7} | {budget.name:<28} | {start_date:<18} | {update_date:<18} |")
+        click.echo(f"| {budget.id:^7} | {budget.name:<28} | {start_date:>18} | {update_date:>18} |")
     
     click.echo(straight_lines)
     
-    click.echo(f"\n{len(list_budgets)+1}. Adicionar novo orçamento")
-    click.echo(f"{len(list_budgets)+2}. Menu anterior")
+    click.echo(f"\n8. Adicionar novo orçamento")
+    click.echo(f"9. Menu anterior")
     
     choice: int = click.prompt("\nEscolha um orçamento ou voltar ao menu anterior", type=int)
     
@@ -123,10 +123,10 @@ def list_budgets() -> None:
             click.pause("Pressione Enter para continuar...")
             list_budgets()
     
-    elif choice == (len(list_budgets)+1):
+    elif choice == 8:
         add_new_budget()
             
-    elif choice == (len(list_budgets)+2):
+    elif choice == 9:
         main()
         
     else:
@@ -143,45 +143,44 @@ def open_budget(budget=Budget) -> None:
     if not list_accounts:
         click.echo("\nNenhuma conta encontrada.\n")
         click.echo("\n1. Adicionar nova conta")
-        click.echo("2. Menu anterior\n")
+        click.echo("9. Menu anterior\n")
         choice: int = click.prompt("Escolha uma opção", type=int)
         if choice == 1:
             add_new_account(budget)
-        elif choice == 2:
+        elif choice == 9:
             list_budgets()
             
-    click.echo(f"{len(list_budgets)} conta(s) encontrada(s).")
+    click.echo(f"{len(list_accounts)} conta(s) encontrada(s).")
      
-    straight_lines = "+---------+-------+------+-------+---------------+"
+    straight_lines = "+---------+--------------------+--------------------+---------------+---------------+"
     
     click.echo(straight_lines)
-    click.echo(f"| SELECAO | CONTA | TIPO | SALDO | ATUALIZADA EM |")
+    click.echo(f"| SELECAO | CONTA              | TIPO               | SALDO         | ATUALIZADA EM |")
     click.echo(straight_lines)
     
     for account  in list_accounts:
         id = account.id
         name = account.name
-        account_type = db.SessionLocal().query(AccountType).filter_by(id=account.account_type_id).first()
-        balance = account.balance
-        update_date = account.update_date.strftime("%d/%m/%Y") if account.update_date else "N/A"
-        click.echo(f"| {id:<7} | {name:<18} | {account_type:<18} | {balance:<18} | {update_date:<18} |")
+        account_type = db.SessionLocal().query(AccountType).filter_by(id=account.account_type_id).first().name if account.account_type_id else None
+        balance = account.balance if account.balance else '-'
+        update_date = account.update_date.strftime("%d/%m/%Y") if account.update_date else None
+        click.echo(f"| {id:^7} | {name:<18} | {account_type:<18} | {balance:>13} | {update_date:>13} |")
     
     click.echo(straight_lines)
     
-    click.echo(f"\n\n{len(list_accounts)+1}. Voltar ao menu inicial")
+    click.echo(f"\n\n9. Menu anterior")
     choice: int = click.prompt("\nEscolha um orçamento ou a opção voltar", type=int)
     
     if choice <= len(list_accounts):
         account: Account = next((b for b in list_accounts if b.id == choice), None)
-        if budget:
-            click.pause(f"\nO número selecionado foi [{choice}], orçamento [{account.name}].")
-            open_budget(budget)
+        if account:
+            open_account(budget, account)
         else:
             click.echo("\nOrçamento não encontrado. Por favor, tente novamente.")
             click.pause("Pressione Enter para continuar...")
             list_budgets()
-    elif choice == (len(list_accounts)+1):
-        main()
+    elif choice == 9:
+        list_budgets()
     else:
         click.echo("\nOpção inválida. Por favor, tente novamente.")
         click.pause("Pressione Enter para continuar...")
@@ -225,7 +224,7 @@ def add_new_account(budget=Budget) -> None:
     print(f"----\n{new_account = }\n----")
     
     click.echo("\n1. Salvar")
-    click.echo("2. Cancelar")
+    click.echo("9. Cancelar")
     choice: int = click.prompt("\nEscolha uma opção", type=int)
     
     if choice == 1:        
@@ -245,9 +244,21 @@ def add_new_account(budget=Budget) -> None:
         finally:
             session.close()
         open_budget(budget)
-    elif choice == 2:
+    elif choice == 9:
         open_budget(budget)
     else:
         click.echo("\nOpção inválida. Por favor, tente novamente.")
         click.pause("Pressione Enter para continuar...")
+        open_budget(budget)
+        
+        
+def open_account(budget=Budget, account=Account) -> None:
+    click.clear()
+    click.echo(f"\n## CONTA: {account.name} ##\n")
+    
+    click.echo("9. Voltar ao orçamento\n")
+    
+    choice: int = click.prompt("\nEscolha uma opção", type=int)
+    
+    if choice == 9:
         open_budget(budget)
