@@ -6,10 +6,13 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from sqlalchemy import Column, String, DateTime,Integer
 from datetime import datetime, timezone
+from sqlalchemy import Column, String, DateTime,Integer, ForeignKey
+from sqlalchemy.orm import relationship
+
 from poupa.model.database import Base
 
+from poupa.model.account import Account, AccountType
 
 class Budget(Base):
     __tablename__ = "budgets"
@@ -18,6 +21,9 @@ class Budget(Base):
     name = Column(String, nullable=False)
     start_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))      
     update_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))    
+    
+    # Relacionamento um-para-muitos com Account
+    accounts = relationship("Account", back_populates="budget", cascade="all, delete-orphan")
     
     def __init__(self, name, start_date=None):
         self.name = name

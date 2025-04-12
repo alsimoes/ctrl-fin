@@ -6,30 +6,35 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime, timezone
-from poupa.model.database import Base
-from sqlalchemy import ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
+from poupa.model.database import Base
 
 class Account(Base):
     __tablename__ = "accounts"
 
+    # Columns
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
-    update_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    balance = Column(String, nullable=True, default="0.00")
-    balance_date = Column(DateTime, nullable=True, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    impact_budget = Column(Integer, nullable=False, default=0)
+    budget_id = Column(Integer, ForeignKey("budgets.id"), nullable=True)
     account_type_id = Column(Integer, ForeignKey("account_types.id"), nullable=False)
-    account_type = relationship("AccountType")
+    impact_budget = Column(Integer, nullable=False, default=0)
+    balance = Column(String, nullable=True, default=None)
+    balance_date = Column(DateTime, nullable=True, default=None)
+    update_date = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    account_type = relationship("AccountType")    
+    budget = relationship("Budget", back_populates="accounts")
 
-    def __init__(self, name, balance=None, balance_date=None, impact_budget=False, account_type=None):
+    def __init__(self, name, budget_id=None, balance=None, balance_date=None, impact_budget=False, account_type=None):
         self.name = name
+        self.budget_id = budget_id
         self.account_type = account_type
         self.impact_budget = int(impact_budget)
-        self.balance = balance or "0.00"
+        self.balance = balance or None
         self.balance_date = balance_date or None
                 
 

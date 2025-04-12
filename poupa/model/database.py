@@ -8,7 +8,8 @@
 
 import os
 from sqlalchemy import create_engine, Engine
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session, declarative_base
+
 
 # Configurações do SQLAlchemy
 Base = declarative_base()
@@ -40,6 +41,7 @@ def update_db():
     if engine is None:
         raise RuntimeError("O banco de dados não foi configurado. Chame 'config' primeiro.")
     with engine.connect() as connection:
+        # print(f"{Base.metadata.sorted_tables = }")
         for table in Base.metadata.sorted_tables:
             if not engine.dialect.has_table(connection, table.name):
                 table.create(engine)
