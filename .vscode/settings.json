@@ -1,5 +1,9 @@
 {
     "python.terminal.activateEnvironment": true,
     "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
-    "editor.fontFamily": "editor.fontFamily, Consolas, 'Courier New', monospace"
+    "editor.fontFamily": "editor.fontFamily, Consolas, 'Courier New', monospace",
+    "todo-tree.tree.showBadges": true,
+    "todo-tree.tree.disableCompactFolders": true,
+    "todo-tree.tree.showCountsInTree": true,
+    "todo-tree.tree.scanMode": "workspace"
 }
