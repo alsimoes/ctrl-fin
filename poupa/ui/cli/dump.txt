@@ -1,6 +1,0 @@
-def prompt_account_details():
-    account_name = click.prompt("\nNome", type=str)
-    account_balance = click.prompt("\nSaldo atual", type=float, default=0.0)
-    account_balance_date = click.prompt("\nData do saldo (dd/mm/aaaa)", type=str, default=datetime.now().strftime("%d/%m/%Y"))
-    account_impact_budget = click.confirm("\nA conta impacta o orçamento?", default=False)
-    return account_name, account_balance, account_balance_date, account_impact_budget
