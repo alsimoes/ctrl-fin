@@ -7,27 +7,30 @@
 # LICENSE file in the root directory of this source tree.
 
 from poupa.ui.cli.__rich__ import CLI
-from poupa.ui.cli.navigation import open_budget, list_budgets, open_account
-from poupa.model.budget import Budget
-from poupa.model.account import Account, AccountType
-import poupa.model.database as db
+from poupa.ui.cli import navigation
+
+from poupa.controller.account_controller import AccountController, AccountTypeController
 
 
-def open_budget(budget=Budget) -> None:
+def open_budget(budget) -> None:
     CLI.clear()
     CLI.print_title("POUPA SIMÃO CLI")
     CLI.print_subtitle(f"ORÇAMENTO: {budget.name}")
 
-    list_accounts: list = db.SessionLocal().query(Account).filter_by(budget_id=budget.id).all()
+    account_controller = AccountController()
+    account_type_controller = AccountTypeController()
+
+    # Obtém as contas associadas ao orçamento
+    list_accounts = account_controller.get_accounts_by_budget_id(budget.id)
     if not list_accounts:
         CLI.echo("\nNenhuma conta encontrada.\n")
         CLI.echo("\n1. Adicionar nova conta")
         CLI.echo("9. Menu anterior\n")
         choice: int = CLI.prompt("Escolha uma opção", type=int)
         if choice == 1:
-            add_new_account(budget)
+            navigation.add_new_account(budget)
         elif choice == 9:
-            list_budgets()
+            navigation.list_budgets()
 
     headers = [
         f"{'SELECAO':^7}", 
@@ -39,7 +42,7 @@ def open_budget(budget=Budget) -> None:
         [
             f"{account.id:^7}",
             f"{account.name:<18}",
-            f"{db.SessionLocal().query(AccountType).filter_by(id=account.account_type_id).first().name if account.account_type_id else None:<18}",
+            f"{account_type_controller.get_account_type_by_id(account.account_type_id).name if account.account_type_id else None:<18}",
             f"{account.balance if account.balance else '-':>13}",
             f"{account.update_date.strftime('%d/%m/%Y') if account.update_date else None:>13}",
         ]
@@ -56,16 +59,16 @@ def open_budget(budget=Budget) -> None:
     choice: int = CLI.choice("\nEscolha um orçamento ou uma das opções do menu", choices=choices, default="1")
 
     if choice <= len(list_accounts):
-        account: Account = next((b for b in list_accounts if b.id == choice), None)
+        account = next((b for b in list_accounts if b.id == choice), None)
         if account:
-            open_account(budget, account)
+            navigation.open_account(budget, account)
         else:
-            CLI.echo("\nOrçamento não encontrado. Por favor, tente novamente.")
+            CLI.echo("\nConta não encontrada. Por favor, tente novamente.")
             CLI.pause("Pressione Enter para continuar...")
-            list_budgets()
+            navigation.list_budgets()
     elif choice == 9:
-        list_budgets()
+        navigation.list_budgets()
     else:
         CLI.echo("\nOpção inválida. Por favor, tente novamente.")
         CLI.pause("Pressione Enter para continuar...")
-        open_budget()
+        navigation.open_budget()

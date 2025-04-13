@@ -7,8 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from poupa.ui.cli.__rich__ import CLI
-from poupa.ui.cli.screens.list_budgets_screen import list_budgets
-import poupa.model.database as db
+from poupa.ui.cli import navigation
 
 def main() -> None:
     CLI.clear()
@@ -24,7 +23,7 @@ def main() -> None:
         CLI.pause("Pressione Enter para continuar...")
         main()
     elif choice == 2:
-        list_budgets()
+        navigation.list_budgets()
     elif choice == 9:
         CLI.clear()
         CLI.print_title("POUPA SIMÃO CLI")

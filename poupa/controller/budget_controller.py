@@ -5,25 +5,27 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree
-# .
+
 from typing import Optional, List
-from datetime import datetime
 
 from poupa.model.budget import Budget
+from poupa.model.validators import BudgetValidator
+
 from poupa.controller.context_manager import get_session
-from poupa.controller.validators import BudgetValidator
 
 
 class BudgetController:
+        
     def create_budget(self, data: dict) -> Budget:
         """
         Cria um novo orçamento após validar os dados.
         :param data: Dicionário contendo os dados do orçamento.
         :return: Objeto Budget criado.
         """
-        # Valida os dados usando o BudgetValidator
-        validated_data = BudgetValidator(**data).model_dump()
-
+        # Valida os dados do orçamento
+        # O método model_dump() é usado para converter o modelo Pydantic em um dicionário        
+        validated_data = BudgetValidator(**data).for_creation()
+        
         with get_session() as session:
             budget = Budget(**validated_data)
             session.add(budget)
@@ -31,24 +33,28 @@ class BudgetController:
             session.refresh(budget)
             return budget
 
-    def get_all_budgets(self) -> List[Budget]:
-        """
-        Retorna todos os orçamentos.
-        :return: Lista de objetos Budget.
-        """
+    def get_all_budgets(self):
+        """Retorna todos os orçamentos."""
         with get_session() as session:
-            budgets = session.query(Budget).all()
-            return budgets
+            return session.query(Budget).all()
 
-    def get_budget(self, budget_id: int) -> Optional[Budget]:
+    def get_budget_by_id(self, budget_id: int):
         """
         Retorna um orçamento pelo ID.
-        :param budget_id: ID do orçamento.
-        :return: Objeto Budget ou None se não encontrado.
+        :param budget_id: ID do orçamento a ser buscado.
+        :return: Objeto Budget se encontrado, ou None se não encontrado.
         """
         with get_session() as session:
-            budget = session.query(Budget).filter(Budget.id == budget_id).first()
-            return budget
+            return session.query(Budget).filter(Budget.id == budget_id).first()
+        
+    def get_budget_by_name(self, name: str) -> List[Budget]:
+        """
+        Retorna uma lista de orçamentos que correspondem ao nome fornecido.
+        :param name: Nome do orçamento.
+        :return: Lista de orçamentos.
+        """
+        with get_session() as session:
+            return session.query(Budget).filter(Budget.name.ilike(f"%{name}%")).all()
 
     def update_budget(self, budget_id: int, data: dict) -> Optional[Budget]:
         """
@@ -87,3 +93,4 @@ class BudgetController:
                 session.commit()
                 return True
             return False
+    
