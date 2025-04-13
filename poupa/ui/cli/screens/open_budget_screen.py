@@ -15,6 +15,7 @@ from poupa.controller.account_controller import AccountController, AccountTypeCo
 def open_budget(budget) -> None:
     CLI.clear()
     CLI.print_title("POUPA SIMÃO CLI")
+    CLI.skip_line()
     CLI.print_subtitle(f"ORÇAMENTO: {budget.name}")
 
     account_controller = AccountController()
@@ -23,9 +24,9 @@ def open_budget(budget) -> None:
     # Obtém as contas associadas ao orçamento
     list_accounts = account_controller.get_accounts_by_budget_id(budget.id)
     if not list_accounts:
-        CLI.echo("\nNenhuma conta encontrada.\n")
-        CLI.echo("\n1. Adicionar nova conta")
-        CLI.echo("9. Menu anterior\n")
+        CLI.echo("Nenhuma conta encontrada.", lines_before=1, lines_after=1)
+        CLI.echo("1. Adicionar nova conta", lines_before=1)
+        CLI.echo("9. Menu anterior", lines_after=1)
         choice: int = CLI.prompt("Escolha uma opção", type=int)
         if choice == 1:
             navigation.add_new_account(budget)
@@ -50,25 +51,34 @@ def open_budget(budget) -> None:
     ]
     CLI.print_table(headers, rows)
 
-    CLI.echo(f"\n\n        6. Adicionar nova conta")
+    CLI.echo(f"        6. Adicionar nova conta", lines_before=2)
     CLI.echo(f"        7. Editar conta")
     CLI.echo(f"        8. Excluir conta")
     CLI.echo(f"        9. Menu anterior")
     
     choices = [str(a.id) for a in list_accounts] + ["6", "7", "8", "9"] 
-    choice: int = CLI.choice("\nEscolha um orçamento ou uma das opções do menu", choices=choices, default="1")
+    CLI.skip_line()
+    choice: str = CLI.choice("Escolha um orçamento ou uma das opções do menu", choices=choices, default="1")
 
     if choice <= len(list_accounts):
         account = next((b for b in list_accounts if b.id == choice), None)
         if account:
             navigation.open_account(budget, account)
         else:
-            CLI.echo("\nConta não encontrada. Por favor, tente novamente.")
+            CLI.echo("Conta não encontrada. Por favor, tente novamente.", lines_before=1, lines_after=1)
             CLI.pause("Pressione Enter para continuar...")
             navigation.list_budgets()
+    elif choice == 6:
+        navigation.add_new_account(budget)
+    elif choice == 7:
+        # TODO: Implement editing an account
+        pass
+    elif choice == 8:
+        # TODO: Implement deleting an account
+        pass
     elif choice == 9:
         navigation.list_budgets()
     else:
-        CLI.echo("\nOpção inválida. Por favor, tente novamente.")
+        CLI.echo("Opção inválida. Por favor, tente novamente.", lines_before=1, lines_after=1)
         CLI.pause("Pressione Enter para continuar...")
         navigation.open_budget()

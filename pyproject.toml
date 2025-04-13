@@ -13,7 +13,8 @@ dependencies = [
     "sqlalchemy",
     "click",
     "tqdm",
-    "pydantic"
+    "pydantic",
+    "rich (>=14.0.0,<15.0.0)"
     ]
 license = "MIT"
 classifiers = [

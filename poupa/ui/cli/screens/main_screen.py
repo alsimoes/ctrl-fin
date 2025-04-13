@@ -10,27 +10,11 @@ from poupa.ui.cli.__rich__ import CLI
 from poupa.ui.cli import navigation
 
 def main() -> None:
-    CLI.clear()
-    CLI.print_title("POUPA SIMÃO CLI")
-    CLI.print_subtitle("MENU INICIAL")
-    CLI.echo("\n        1. Abrir último orçamento")
-    CLI.echo("        2. Listar orçamentos")
-    CLI.echo("\n        9. Sair")
-    choice: int = CLI.choice("\nEscolha uma opção", choices=["1", "2", "9"], default="1")
-
-    if choice == 1:
-        CLI.echo("\nSELECIONADO: Item abrir último orçamento selecionado\n")
-        CLI.pause("Pressione Enter para continuar...")
-        main()
-    elif choice == 2:
-        navigation.list_budgets()
-    elif choice == 9:
-        CLI.clear()
-        CLI.print_title("POUPA SIMÃO CLI")
-        CLI.echo("\n    Tchau! Tchau!")
-        CLI.echo("\n    ...e até breve!\n\n")
-        quit()
-    else:
-        CLI.echo("\nOpção inválida. Por favor, tente novamente.")
-        CLI.pause("Pressione Enter para continuar...")
-        main()
+    try:
+        navigation.show_main_menu()
+    except KeyboardInterrupt:
+        navigation.close_application()
+    except EOFError:
+        CLI.pause("EOFError: Unexpected end of input. Exiting application.", lines_before=1, lines_after=1)
+    except Exception as e:
+        CLI.pause(f"Unexpected error:\n{e}\nExiting application.", lines_before=1, lines_after=1)
