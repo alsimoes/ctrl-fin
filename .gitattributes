@@ -1,0 +1,90 @@
+# Arquivo .gitattributes para configuração do Git LFS
+# ---------------------------------------------------
+# Este arquivo especifica quais padrões de arquivo devem ser rastreados pelo Git LFS.
+# Arquivos rastreados pelo LFS são armazenados externamente, mantendo seu repositório Git leve.
+#
+# Para adicionar um novo tipo de arquivo ao LFS, use o comando:
+# git lfs track "*.extensao"
+# E depois adicione e comite o arquivo .gitattributes:
+# git add .gitattributes
+# git commit -m "Atualiza rastreamento LFS para *.extensao"
+#
+# Certifique-se de que o Git LFS está instalado (`git lfs install`).
+
+# Binários do Microsoft Office e OpenDocument
+*.doc filter=lfs diff=lfs merge=lfs -text
+*.docx filter=lfs diff=lfs merge=lfs -text
+*.xls filter=lfs diff=lfs merge=lfs -text
+*.xlsx filter=lfs diff=lfs merge=lfs -text
+*.ppt filter=lfs diff=lfs merge=lfs -text
+*.pptx filter=lfs diff=lfs merge=lfs -text
+*.odt filter=lfs diff=lfs merge=lfs -text
+*.ods filter=lfs diff=lfs merge=lfs -text
+*.odp filter=lfs diff=lfs merge=lfs -text
+
+# Imagens
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.bmp filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.svg filter=lfs diff=lfs merge=lfs -text # SVGs podem ser grandes e são melhor tratados como binários para diff
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.heic filter=lfs diff=lfs merge=lfs -text
+*.heif filter=lfs diff=lfs merge=lfs -text
+
+# Diagramas Draw.io (agora diagrams.net)
+*.drawio filter=lfs diff=lfs merge=lfs -text
+*.drawio.svg filter=lfs diff=lfs merge=lfs -text # Exportações SVG de Draw.io
+*.drawio.png filter=lfs diff=lfs merge=lfs -text # Exportações PNG de Draw.io
+
+# Documentos e Arquivos Comprimidos
+*.pdf filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.rar filter=lfs diff=lfs merge=lfs -text
+*.tar filter=lfs diff=lfs merge=lfs -text
+*.gz filter=lfs diff=lfs merge=lfs -text
+*.bz2 filter=lfs diff=lfs merge=lfs -text
+*.7z filter=lfs diff=lfs merge=lfs -text
+
+# Arquivos comuns em projetos Python e de Data Science/Machine Learning
+*.ipynb filter=lfs diff=lfs merge=lfs -text # Jupyter Notebooks (podem conter saídas grandes)
+*.pkl filter=lfs diff=lfs merge=lfs -text # Python pickle files
+*.joblib filter=lfs diff=lfs merge=lfs -text # Scikit-learn models
+*.h5 filter=lfs diff=lfs merge=lfs -text # HDF5 files (modelos, datasets)
+*.hdf5 filter=lfs diff=lfs merge=lfs -text
+*.onnx filter=lfs diff=lfs merge=lfs -text # Open Neural Network Exchange
+*.pb filter=lfs diff=lfs merge=lfs -text # Protocol Buffer (TensorFlow models)
+*.tflite filter=lfs diff=lfs merge=lfs -text # TensorFlow Lite models
+*.pth filter=lfs diff=lfs merge=lfs -text # PyTorch models
+*.pt filter=lfs diff=lfs merge=lfs -text # PyTorch models
+*.ckpt filter=lfs diff=lfs merge=lfs -text # Checkpoint files (ML)
+*.safetensors filter=lfs diff=lfs merge=lfs -text # SafeTensors (ML)
+
+# Fontes
+*.ttf filter=lfs diff=lfs merge=lfs -text
+*.otf filter=lfs diff=lfs merge=lfs -text
+*.woff filter=lfs diff=lfs merge=lfs -text
+*.woff2 filter=lfs diff=lfs merge=lfs -text
+
+# Outros binários grandes (descomente e ajuste conforme necessário)
+*.iso filter=lfs diff=lfs merge=lfs -text
+*.dmg filter=lfs diff=lfs merge=lfs -text
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.msi filter=lfs diff=lfs merge=lfs -text
+*.jar filter=lfs diff=lfs merge=lfs -text
+*.whl filter=lfs diff=lfs merge=lfs -text # Python wheels (se armazenados no repo)
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.avi filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text # Adobe Photoshop
+*.ai filter=lfs diff=lfs merge=lfs -text # Adobe Illustrator
+
+# Arquivos CSV grandes (use com cautela, apenas se forem realmente grandes e não mudarem frequentemente)
+*.csv filter=lfs diff=lfs merge=lfs -text
+*.ofx filter=lfs diff=lfs merge=lfs -text
