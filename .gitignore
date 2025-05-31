@@ -179,3 +179,4 @@ cython_debug/
 *.7z
 .vs
 .vscode
+*.db
