@@ -180,4 +180,4 @@ cython_debug/
 .vs
 .vscode
 *.db
-.code-workspace
+*.code-workspace
