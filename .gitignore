@@ -181,3 +181,4 @@ cython_debug/
 .vscode
 *.db
 *.code-workspace
+.idea
